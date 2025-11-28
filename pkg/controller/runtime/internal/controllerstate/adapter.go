@@ -113,7 +113,13 @@ func (adapter *StateAdapter) get(ctx context.Context, disableCache bool, resourc
 		return nil, err
 	}
 
-	if cacheHandled := adapter.Cache.IsHandled(resourcePointer.Namespace(), resourcePointer.Type()); cacheHandled && !disableCache {
+	getOpts := state.GetOptions{}
+
+	for _, o := range opts {
+		o(&getOpts)
+	}
+
+	if cacheHandled := adapter.Cache.IsHandled(resourcePointer.Namespace(), resourcePointer.Type()); cacheHandled && !getOpts.Uncached {
 		return adapter.Cache.Get(ctx, resourcePointer, opts...)
 	}
 
@@ -140,7 +146,13 @@ func (adapter *StateAdapter) list(ctx context.Context, disableCache bool, resour
 		return resource.List{}, err
 	}
 
-	if cacheHandled := adapter.Cache.IsHandled(resourceKind.Namespace(), resourceKind.Type()); cacheHandled && !disableCache {
+	listOpts := state.ListOptions{}
+
+	for _, o := range opts {
+		o(&listOpts)
+	}
+
+	if cacheHandled := adapter.Cache.IsHandled(resourceKind.Namespace(), resourceKind.Type()); cacheHandled && !listOpts.Uncached {
 		return adapter.Cache.List(ctx, resourceKind, opts...)
 	}
 

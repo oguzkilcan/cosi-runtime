@@ -9,6 +9,7 @@ import "github.com/cosi-project/runtime/pkg/resource"
 // GetOptions for the CoreState.Get function.
 type GetOptions struct {
 	UnmarshalOptions UnmarshalOptions
+	Uncached         bool
 }
 
 // GetOption builds GetOptions.
@@ -23,11 +24,19 @@ func WithGetUnmarshalOptions(opt ...UnmarshalOption) GetOption {
 	}
 }
 
+// WithGetUncached disables caching for the Get API.
+func WithGetUncached() GetOption {
+	return func(opts *GetOptions) {
+		opts.Uncached = true
+	}
+}
+
 // ListOptions for the CoreState.List function.
 type ListOptions struct {
 	IDQuery          resource.IDQuery
 	LabelQueries     resource.LabelQueries
 	UnmarshalOptions UnmarshalOptions
+	Uncached         bool
 }
 
 // ListOption builds ListOptions.
@@ -61,6 +70,13 @@ func WithListUnmarshalOptions(opt ...UnmarshalOption) ListOption {
 		for _, o := range opt {
 			o(&opts.UnmarshalOptions)
 		}
+	}
+}
+
+// WithListUncached disables caching for the List API.
+func WithListUncached() ListOption {
+	return func(opts *ListOptions) {
+		opts.Uncached = true
 	}
 }
 
